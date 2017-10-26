@@ -90,8 +90,6 @@
 	});
 	exports.ChartjsHoverLinePlugin = undefined;
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _chart = __webpack_require__(1);
 
 	var _chart2 = _interopRequireDefault(_chart);
@@ -100,60 +98,53 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var ChartjsHoverLinePlugin = exports.ChartjsHoverLinePlugin = function () {
-		function ChartjsHoverLinePlugin() {
-			// var parentEventHandler = Chart.Controller.prototype.eventHandler;
+	var ChartjsHoverLinePlugin = exports.ChartjsHoverLinePlugin = function ChartjsHoverLinePlugin() {
+		_classCallCheck(this, ChartjsHoverLinePlugin);
 
-			// Chart.Controller.prototype.eventHandler = function() {
-			// 	var orig = parentEventHandler.apply(this, arguments);
-			// 	var eventPosition = Chart.helpers.getRelativePosition(arguments[0].native, this.chart);
-			// 	var chartArea = this.chart.chartArea;
-			// 	var yPos = Math.max(Math.min(eventPosition.y, chartArea.bottom),chartArea.top);
+		var parentEventHandler = _chart2.default.Controller.prototype.eventHandler;
 
-			// 	this.clear();
-			// 	this.draw();
+		_chart2.default.Controller.prototype.eventHandler = function () {
+			var orig = parentEventHandler.apply(this, arguments);
+			var eventPosition = _chart2.default.helpers.getRelativePosition(arguments[0].native, this.chart);
+			var chartArea = this.chart.chartArea;
 
-			// 	// Draw the horizontal line here
-			// 	this.chart.ctx.beginPath();
-			// 	this.chart.ctx.moveTo(chartArea.left, yPos);
-			// 	this.chart.ctx.strokeStyle = "#000000";
-			// 	this.chart.ctx.lineTo(chartArea.right, yPos);
-			// 	this.chart.ctx.stroke();
+			var xPos = Math.max(Math.min(eventPosition.x, chartArea.right), chartArea.left);
 
-			// 	return orig;
-			// };
+			var lineEndpoints = {
+				'x1': xPos,
+				'y1': chartArea.top,
+				'x2': xPos,
+				'y2': chartArea.bottom
+			};
 
-			_classCallCheck(this, ChartjsHoverLinePlugin);
-		}
+			var options = _chart2.default.helpers.configMerge({
+				horizontal: false,
+				color: "#000000"
+			}, this.chart.options.hoverLine);
 
-		_createClass(ChartjsHoverLinePlugin, [{
-			key: 'beforeInit',
-			value: function beforeInit(chart, options) {
-				var parentEventHandler = _chart2.default.Controller.prototype.eventHandler;
+			if (options.horizontal) {
+				var yPos = Math.max(Math.min(eventPosition.y, chartArea.bottom), chartArea.top);
 
-				_chart2.default.Controller.prototype.eventHandler = function () {
-					var orig = parentEventHandler.apply(this, arguments);
-					var eventPosition = _chart2.default.helpers.getRelativePosition(arguments[0].native, this.chart);
-					var chartArea = this.chart.chartArea;
-					var yPos = Math.max(Math.min(eventPosition.y, chartArea.bottom), chartArea.top);
-
-					this.clear();
-					this.draw();
-
-					// Draw the horizontal line here
-					this.chart.ctx.beginPath();
-					this.chart.ctx.moveTo(chartArea.left, yPos);
-					this.chart.ctx.strokeStyle = "#000000";
-					this.chart.ctx.lineTo(chartArea.right, yPos);
-					this.chart.ctx.stroke();
-
-					return orig;
-				};
+				lineEndpoints.x1 = chartArea.left;
+				lineEndpoints.y1 = yPos;
+				lineEndpoints.x2 = chartArea.right;
+				lineEndpoints.y2 = yPos;
 			}
-		}]);
 
-		return ChartjsHoverLinePlugin;
-	}();
+			// CLear old line
+			this.clear();
+			this.draw();
+
+			// Draw the line here
+			this.chart.ctx.beginPath();
+			this.chart.ctx.moveTo(lineEndpoints.x1, lineEndpoints.y1);
+			this.chart.ctx.strokeStyle = options.color;
+			this.chart.ctx.lineTo(lineEndpoints.x2, lineEndpoints.y2);
+			this.chart.ctx.stroke();
+
+			return orig;
+		};
+	};
 
 /***/ })
 /******/ ]);

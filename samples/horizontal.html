@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Scatter Chart</title>
+    <script src="../node_modules/chart.js/dist/Chart.bundle.js"></script>
+    <script src="../node_modules/chart.js/samples/utils.js"></script>
+    <script src="../dist/chartjs-plugin-hover-line.js"></script>
+    <style>
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+</head>
+
+<body>
+    <div style="width:75%">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+
+        var chartData = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+            {
+                type: "line",
+                label: "Dataset 1",
+                borderColor: window.chartColors.blue,
+                borderWidth: 2,
+                fill: false,
+                data: [
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor()
+                ]
+            }
+            ]
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myMixedChart = new Chart(ctx, {
+                type: "line",
+                data: chartData,
+                options: {
+                    hoverLine: {
+                        horizontal: true,
+                    }
+                }
+            });
+        };
+
+    </script>
+</body>
+
+</html>
